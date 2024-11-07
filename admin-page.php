@@ -111,9 +111,13 @@ function sqlite_integration_admin_screen() {
 				<p><?php esc_html_e( 'By clicking the button below, you will be redirected to the WordPress installation screen to setup your new database', 'sqlite-database-integration' ); ?></p>
 
 				<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=sqlite-integration&confirm-install' ), 'sqlite-install' ) ); ?>"><?php esc_html_e( 'Install SQLite database', 'sqlite-database-integration' ); ?></a>
+				<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=sqlite-integration&confirm-mysql-migration=1' ), 'sqlite-confirm-mysql-migration' ) ); ?>"><?php esc_html_e( 'Migrate database from MySQL to SQLite', 'sqlite-database-integration' ); ?></a>
 			<?php endif; ?>
 		<?php endif; ?>
 	</div>
+	<?php if ( isset( $_GET['confirm-mysql-migration'] ) ) : ?>
+		<span id="sqlite-migration-status"></span>
+	<?php endif; ?>
 	<?php
 }
 
