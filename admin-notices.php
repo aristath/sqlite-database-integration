@@ -29,18 +29,18 @@ function sqlite_plugin_admin_notice() {
 	}
 
 	/*
-	 * If the SQLITE_DB_DROPIN_VERSION constant is not defined
+	 * If the SQLITE_DROPIN constant is not defined
 	 * but there's a db.php file in the wp-content directory, then the module can't be activated.
 	 * The module should not have been activated in the first place
 	 * (there's a check in the can-load.php file), but this is a fallback check.
 	 */
-	if ( file_exists( WP_CONTENT_DIR . '/db.php' ) && ! defined( 'SQLITE_DB_DROPIN_VERSION' ) ) {
+	if ( file_exists( WP_CONTENT_DIR . '/db.php' ) && ! defined( 'SQLITE_DROPIN' ) ) {
 		printf(
 			'<div class="notice notice-error"><p>%s</p></div>',
 			sprintf(
-				/* translators: 1: SQLITE_DB_DROPIN_VERSION constant, 2: db.php drop-in path */
+				/* translators: 1: SQLITE_DROPIN constant, 2: db.php drop-in path */
 				__( 'The SQLite Integration module is active, but the %1$s constant is missing. It appears you already have another %2$s file present on your site. ', 'sqlite-database-integration' ),
-				'<code>SQLITE_DB_DROPIN_VERSION</code>',
+				'<code>SQLITE_DROPIN</code>',
 				'<code>' . esc_html( basename( WP_CONTENT_DIR ) ) . '/db.php</code>'
 			)
 		);

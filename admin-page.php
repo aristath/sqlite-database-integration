@@ -32,7 +32,7 @@ function sqlite_integration_admin_screen() {
 	</div>
 	<!-- Set the wrapper width to 50em, to improve readability. -->
 	<div style="max-width:50em;">
-		<?php if ( defined( 'SQLITE_DB_DROPIN_VERSION' ) ) : ?>
+		<?php if ( defined( 'SQLITE_DROPIN' ) ) : ?>
 			<div class="notice notice-success">
 				<p><?php esc_html_e( 'SQLite is enabled.', 'sqlite-database-integration' ); ?></p>
 			</div>
@@ -55,41 +55,18 @@ function sqlite_integration_admin_screen() {
 				<div class="notice notice-error">
 					<p><?php esc_html_e( 'We detected that the PDO SQLite driver is missing from your server (the pdo_sqlite extension is not loaded). Please make sure that SQLite is enabled in your PHP installation before proceeding.', 'sqlite-database-integration' ); ?></p>
 				</div>
-			<?php elseif ( file_exists( WP_CONTENT_DIR . '/db.php' ) && ! defined( 'SQLITE_DB_DROPIN_VERSION' ) ) : ?>
-				<?php if ( defined( 'PERFLAB_SQLITE_DB_DROPIN_VERSION' ) ) : ?>
-					<div class="notice notice-warning">
-						<p>
-							<?php
-							printf(
-								/* translators: %s: db.php drop-in path */
-								esc_html__( 'An older %s file was detected. Please click the button below to update the file.', 'sqlite-database-integration' ),
-								'<code>' . esc_html( basename( WP_CONTENT_DIR ) ) . '/db.php</code>'
-							);
-							?>
-						</p>
-					</div>
-					<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=sqlite-integration&confirm-install&upgrade-from-pl' ), 'sqlite-install' ) ); ?>">
+			<?php elseif ( file_exists( WP_CONTENT_DIR . '/db.php' ) && ! defined( 'SQLITE_DROPIN' ) ) : ?>
+				<div class="notice notice-error">
+					<p>
 						<?php
 						printf(
 							/* translators: %s: db.php drop-in path */
-							esc_html__( 'Update %s file', 'sqlite-database-integration' ),
+							esc_html__( 'The SQLite plugin cannot be activated because a different %s drop-in already exists.', 'sqlite-database-integration' ),
 							'<code>' . esc_html( basename( WP_CONTENT_DIR ) ) . '/db.php</code>'
 						);
 						?>
-					</a>
-				<?php else : ?>
-					<div class="notice notice-error">
-						<p>
-							<?php
-							printf(
-								/* translators: %s: db.php drop-in path */
-								esc_html__( 'The SQLite plugin cannot be activated because a different %s drop-in already exists.', 'sqlite-database-integration' ),
-								'<code>' . esc_html( basename( WP_CONTENT_DIR ) ) . '/db.php</code>'
-							);
-							?>
-						</p>
-					</div>
-				<?php endif; ?>
+					</p>
+				</div>
 			<?php elseif ( ! is_writable( WP_CONTENT_DIR ) ) : ?>
 				<div class="notice notice-error">
 					<p>
@@ -111,9 +88,13 @@ function sqlite_integration_admin_screen() {
 				<p><?php esc_html_e( 'By clicking the button below, you will be redirected to the WordPress installation screen to setup your new database', 'sqlite-database-integration' ); ?></p>
 
 				<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=sqlite-integration&confirm-install' ), 'sqlite-install' ) ); ?>"><?php esc_html_e( 'Install SQLite database', 'sqlite-database-integration' ); ?></a>
+				<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=sqlite-integration&confirm-mysql-migration=1' ), 'sqlite-confirm-mysql-migration' ) ); ?>"><?php esc_html_e( 'Migrate database from MySQL to SQLite', 'sqlite-database-integration' ); ?></a>
 			<?php endif; ?>
 		<?php endif; ?>
 	</div>
+	<?php if ( isset( $_GET['confirm-mysql-migration'] ) ) : ?>
+		<span id="sqlite-migration-status"></span>
+	<?php endif; ?>
 	<?php
 }
 
@@ -129,7 +110,7 @@ function sqlite_integration_admin_screen() {
 function sqlite_plugin_adminbar_item( $admin_bar ) {
 	global $wpdb;
 
-	if ( defined( 'SQLITE_DB_DROPIN_VERSION' ) && defined( 'DB_ENGINE' ) && 'sqlite' === DB_ENGINE ) {
+	if ( defined( 'SQLITE_DROPIN' ) && SQLITE_DROPIN && defined( 'DB_ENGINE' ) && 'sqlite' === DB_ENGINE ) {
 		$title = '<span style="color:#46B450;">' . __( 'Database: SQLite', 'sqlite-database-integration' ) . '</span>';
 	} elseif ( stripos( $wpdb->db_server_info(), 'maria' ) !== false ) {
 		$title = '<span style="color:#DC3232;">' . __( 'Database: MariaDB', 'sqlite-database-integration' ) . '</span>';
